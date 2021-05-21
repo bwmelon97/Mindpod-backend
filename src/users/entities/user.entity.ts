@@ -27,24 +27,24 @@ export class User extends CoreEntity {
     @Column({ type: 'simple-enum', enum: UserRole })
     role: UserRole
 
-    // @Field(type => [Podcast])
-    // @OneToMany(type => Podcast, podcast => podcast.host)
-    // podcasts: Podcast[]
+    @Field(type => [Podcast])
+    @OneToMany(
+        type => Podcast, podcast => podcast.host, 
+        { eager: true }
+    )
+    podcasts: Podcast[]
 
     @Field(type => [Review])
-    @OneToMany(
-        type => Review,
-        review => review.writer
-    )
+    @OneToMany( type => Review, review => review.writer )
     reviews: Review[]
 
     @Field(type => [Podcast])
-    @ManyToMany(type => Podcast)
+    @ManyToMany(type => Podcast, { eager: true })
     @JoinTable()
     subscriptions: Podcast[]
 
     @Field(type => [Episode])
-    @ManyToMany(type => Episode)
+    @ManyToMany(type => Episode, { eager: true })
     @JoinTable()
     playedEpisodes: Episode[]
 

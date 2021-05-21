@@ -21,21 +21,27 @@ export class Podcast extends CoreEntity {
     @Column()
     rating: number;
 
-    // @Field( type => User )
-    // @ManyToOne(
-    //     type => User, user => user.podcasts,
-    //     { onDelete: 'CASCADE' }
-    // )
-    // host: User;
+    @Field( type => User )
+    @ManyToOne(
+        type => User, user => user.podcasts,
+        { onDelete: 'CASCADE' }
+    )
+    host: User;
 
-    // @RelationId((podcast: Podcast) => podcast.host)
-    // hostId: number;
+    @RelationId((podcast: Podcast) => podcast.host)
+    hostId: number;
 
     @Field( type => [Episode] )
-    @OneToMany( type => Episode, entity => entity.podcast )
+    @OneToMany( 
+        type => Episode, entity => entity.podcast, 
+        { eager: true }    
+    )
     episodes: Episode[];
 
     @Field( type => [Review] )
-    @OneToMany( type => Review, review => review.podcast )
+    @OneToMany( 
+        type => Review, review => review.podcast,
+        { eager: true }    
+    )
     reviews: Review[]
 }

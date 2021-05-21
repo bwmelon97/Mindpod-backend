@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { User } from "src/users/entities/user.entity";
-import { Column, Entity, ManyToOne } from "typeorm";
+import { Column, Entity, ManyToOne, RelationId } from "typeorm";
 import { Podcast } from "./podcast.entity";
 
 @ObjectType()
@@ -13,6 +13,9 @@ export class Review extends CoreEntity {
         { onDelete: 'CASCADE' }
     )
     writer: User;
+
+    @RelationId( (review: Review) => review.writer )
+    writerId: number;
 
     @Field(type => String)
     @Column()

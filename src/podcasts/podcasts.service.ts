@@ -28,8 +28,7 @@ export class PodcastsService {
     /* Find => Relation Option */
     async getAllPodCasts (): Promise<PodcastsOutput> {
         try {
-            const podcastList = await this.podcasts.find( {relations: ['episodes', 'reviews']} );   
-            // 찾은 Review에게서 Writer를 탐색하려면 어떻게 해야 ?
+            const podcastList = await this.podcasts.find(); 
             return { ok: true, podcasts: podcastList }
         }
         catch {
@@ -43,8 +42,8 @@ export class PodcastsService {
     async searchPodcasts ( { searchInput }: SearchPodcastsInput ): Promise<PodcastsOutput> {
         try {
             const foundPodcasts = await this.podcasts.find({
+                /* Where 써서 바꾸기 */
                 title: ILike(`%${searchInput}%`),
-                // relation은 어떻게 추가하지 ?
             })
             return { ok: true, podcasts: foundPodcasts }
         } catch (error) {
@@ -57,7 +56,7 @@ export class PodcastsService {
     
     async getPodCastByID (pcID: number): Promise<PodcastOutput> {
         try {
-            const foundPodcast = await this.podcasts.findOne(pcID, {relations: ['episodes', 'reviews']});
+            const foundPodcast = await this.podcasts.findOne(pcID);
             if (!foundPodcast) 
                 return {
                     ok: false,
@@ -78,6 +77,7 @@ export class PodcastsService {
         try {
             const initalData = { title, category, rating: 0, episodes: [], reviews: [] }
             const newPodcast = this.podcasts.create( initalData )
+            /* podcast에 host 추가해야 함 */
             await this.podcasts.save(newPodcast)
             return { ok: true }  
         } catch (error) {
@@ -91,7 +91,7 @@ export class PodcastsService {
     async updatePodCast ({ id, data }: UpdatePodcastDTO ): Promise<CoreOutput> {
         try {
             const { ok, error } = await this.getPodCastByID(id)
-            if ( !ok ) throw Error(error.toString())
+            if ( !ok ) throw Error(error)
             await this.podcasts.update( id, { ...data } )
             return { ok: true }
         } catch (error) { 
@@ -105,7 +105,7 @@ export class PodcastsService {
     async deletePodCast (pcID: number): Promise<CoreOutput> { 
         try {
             const { ok, error } = await this.getPodCastByID(pcID)
-            if ( !ok )  throw Error(error.toString())
+            if ( !ok )  throw Error(error)
             await this.podcasts.delete(pcID)
             return { ok: true }
         } catch (error) { 
@@ -135,15 +135,15 @@ export class PodcastsService {
         }
     }
 
+    /* Toggle Subscribe로 변경 */
     async subscribePodcast ( 
-        user: User,
+        subscriber: User,
         podcastId: number 
     ): Promise<CoreOutput> {
         try {
             const { ok, error, podcast } = await this.getPodCastByID( podcastId );
             if (!ok) throw Error(error)
             
-            const subscriber = await this.users.findOne( user.id, { relations: ['subscriptions'] } )
             subscriber.subscriptions = subscriber.subscriptions.concat([podcast])
             this.users.save(subscriber)
             return { ok: true }
@@ -159,7 +159,7 @@ export class PodcastsService {
     async getEpisodes (pcID: number): Promise<EpisodesOutput> {
         try {
             const { podcast, ok, error } = await this.getPodCastByID(pcID);
-            if ( !ok ) throw Error(error.toString())
+            if ( !ok ) throw Error(error)
             return { ok: true, episodes: podcast.episodes }
         } catch (error) { 
             return { 
@@ -172,7 +172,7 @@ export class PodcastsService {
     async createEpisode ( {pcID, data}: CreateEpisodeDTO ): Promise<CoreOutput> {
         try {
             const { ok, error, podcast } = await this.getPodCastByID(pcID);
-            if ( !ok ) throw Error(error.toString())
+            if ( !ok ) throw Error(error)
     
             const newEpisode: Episode = this.episodes.create({
                 ...data, rating: 0, podcast
@@ -190,7 +190,7 @@ export class PodcastsService {
     async doesEpisodeExist (pcID: number, epID: number): Promise<CoreOutput> {
         try {
             const {ok, error, podcast} = await this.getPodCastByID(pcID);
-            if ( !ok )  throw Error(error.toString())
+            if ( !ok )  throw Error(error)
             const foundEpisode = podcast.episodes.find(ep => ep.id === epID)            
             if ( !foundEpisode ) throw Error(`Episode id: ${epID} does not exist.`)            
             return { ok: true }
@@ -205,7 +205,7 @@ export class PodcastsService {
     async updateEpisode ( { pcID, epID, data }: UpdateEpisodeDTO ): Promise<CoreOutput> {
         try {
             const { ok, error } = await this.doesEpisodeExist(pcID, epID);
-            if ( !ok ) throw Error(error.toString())
+            if ( !ok ) throw Error(error)
             await this.episodes.update(epID, {...data})
             return { ok: true }
         } catch (error) { 
@@ -219,7 +219,7 @@ export class PodcastsService {
     async deleteEpisode (pcID: number, epID: number): Promise<CoreOutput> {
         try {
             const { ok, error } = await this.doesEpisodeExist(pcID, epID)
-            if ( !ok ) throw Error(error.toString())
+            if ( !ok ) throw Error(error)
             await this.episodes.delete(epID)
             return { ok: true }
         } catch (error) {
@@ -230,12 +230,11 @@ export class PodcastsService {
         }
     }
 
-    async markEpisodeAsPlayed (user: User, episodeId: number): Promise<CoreOutput> {
+    async markEpisodeAsPlayed (listener: User, episodeId: number): Promise<CoreOutput> {
         try {
             const episode = await this.episodes.findOne( episodeId )
             if (!episode) throw Error("Couldn't find a episode")
 
-            const listener = await this.users.findOne( user.id, { relations: ['playedEpisodes'] })
             listener.playedEpisodes = listener.playedEpisodes.concat([ episode ])
             await this.users.save(listener)
 

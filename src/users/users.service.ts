@@ -17,13 +17,14 @@ export class UsersService {
         private readonly jwtService: JwtService
     ) {}
 
+    /* only for dev: User DB 확인용 */
     // getUsers = (): Promise<User[]> => this.users.find({
     //     select: ['id', 'email', 'password' ,'role', 'updatedAt', 'createdAt']
     // })
 
     async findUserById ( id: number ): Promise<SeeProfileOutput> {
         try {
-            const user = await this.users.findOne(id, { relations: ['subscriptions', 'playedEpisodes'] })
+            const user = await this.users.findOne(id)
             if ( !user ) throw Error
             return { ok: true, user }
         } catch (error) {
@@ -36,7 +37,7 @@ export class UsersService {
 
     async seeSubscriptions ( listener: User ): Promise<SeeSubscriptionsOutput> {
         try {
-            const { subscriptions } = await this.users.findOne( listener.id, { relations: ['subscriptions'] } )
+            const { subscriptions } = await this.users.findOne( listener.id )
             return { ok: true, subscriptions: subscriptions }
         } catch (error) {
             return {
