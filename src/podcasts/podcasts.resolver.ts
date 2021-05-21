@@ -7,7 +7,8 @@ import { CreateEpisodeDTO } from './dtos/create-episode.dto';
 import { CreatePodcastInput } from './dtos/create-podcast.dto';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
-import { PodcastOutput, PodcastsOutput, SearchPodcastsInput } from './dtos/get-podcast.dto';
+import { PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
+import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 import { UpdateEpisodeDTO } from './dtos/update-episode.dto';
 import { UpdatePodcastDTO } from './dtos/update-podcast.dto';
 import { Episode } from './entities/episode.entity';
@@ -52,10 +53,10 @@ export class PodcastsResolver {
     }
 
     @Role(['Listener'])
-    @Query( returns => PodcastsOutput )
+    @Query( returns => SearchPodcastsOutput )
     searchPodcasts( 
         @Args('input') searchPodcastInput: SearchPodcastsInput 
-    ): Promise<PodcastsOutput> {
+    ): Promise<SearchPodcastsOutput> {
         return this.podcastService.searchPodcasts(searchPodcastInput)
     }
 

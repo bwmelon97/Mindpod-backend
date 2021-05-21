@@ -13,9 +13,3 @@ export class PodcastsOutput extends CoreOutput {
     @Field(type => [Podcast], { nullable: true })
     podcasts?: Podcast[];
 }
-
-@InputType()
-export class SearchPodcastsInput {
-    @Field(type => String)
-    searchInput: string;
-}

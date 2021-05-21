@@ -8,11 +8,12 @@ import { Podcast } from './entities/podcast.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
-import { PodcastOutput, PodcastsOutput, SearchPodcastsInput } from "./dtos/get-podcast.dto";
+import { PodcastOutput, PodcastsOutput } from "./dtos/get-podcast.dto";
 import { CoreOutput } from 'src/common/dtos/core-output.dto';
 import { User } from 'src/users/entities/user.entity';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
 import { Review } from './entities/review.entity';
+import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 
 
 @Injectable()
@@ -39,13 +40,24 @@ export class PodcastsService {
         }
     }
 
-    async searchPodcasts ( { searchInput }: SearchPodcastsInput ): Promise<PodcastsOutput> {
+    async searchPodcasts ( 
+        { searchInput, page }: SearchPodcastsInput 
+    ): Promise<SearchPodcastsOutput> {
         try {
-            const foundPodcasts = await this.podcasts.find({
-                /* Where 써서 바꾸기 */
-                title: ILike(`%${searchInput}%`),
+            const PODCASTS_PER_PAGE = 20;
+            const [ foundPodcasts, totalCounts ] = await this.podcasts.findAndCount({
+                where: {
+                    title: ILike(`%${searchInput}%`),
+                },
+                take: PODCASTS_PER_PAGE,
+                skip: (page - 1) * PODCASTS_PER_PAGE
             })
-            return { ok: true, podcasts: foundPodcasts }
+            return { 
+                ok: true, 
+                podcasts: foundPodcasts,
+                totalCounts,
+                totalPages: Math.ceil( totalCounts / PODCASTS_PER_PAGE )
+            }
         } catch (error) {
             return {
                 ok: false,
