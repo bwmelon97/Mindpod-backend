@@ -20,20 +20,21 @@ export class PodcastsResolver {
 
     @Role(['Any'])
     @Query( returns => PodcastsOutput )
-    getAllPodcasts(): Promise<PodcastsOutput> { return this.podcastService.getAllPodCasts() }
+    getAllPodcasts(): Promise<PodcastsOutput> { return this.podcastService.getAllPodcasts() }
 
     @Role(['Any'])
     @Query( returns => PodcastOutput )
     getPodcast( @Args('id') id: number ): Promise<PodcastOutput> {
-        return this.podcastService.getPodCastByID(id); 
+        return this.podcastService.getPodcastByID(id); 
     }
 
     @Role(['Host'])
     @Mutation( returns => CoreOutput )
     createPodcast( 
+        @AuthUser() authUser: User,
         @Args('input') createPodcastInput: CreatePodcastInput 
     ): Promise<CoreOutput> {
-        return this.podcastService.createPodCast(createPodcastInput)
+        return this.podcastService.createPodcast(authUser, createPodcastInput)
     }
 
     @Role(['Host'])
@@ -41,13 +42,13 @@ export class PodcastsResolver {
     updatePodcast (
         @Args() updatePodcastDTO: UpdatePodcastDTO
     ): Promise<CoreOutput> {
-        return this.podcastService.updatePodCast(updatePodcastDTO)
+        return this.podcastService.updatePodcast(updatePodcastDTO)
     }
  
     @Role(['Host'])
     @Mutation ( returns => CoreOutput )
     deletePodcast( @Args('id') id: number ): Promise<CoreOutput> { 
-        return this.podcastService.deletePodCast(id)
+        return this.podcastService.deletePodcast(id)
     }
 
     @Role(['Listener'])
