@@ -26,7 +26,8 @@ import { Review } from './podcasts/entities/review.entity';
           .valid('production', 'dev', 'test')
           .default('dev'),
         PRIVATE_KEY: Joi.string().required(),
-        DB_NAME: Joi.string().required()
+        DB_NAME: Joi.string(),
+        DATABASE_URL: Joi.string(),
       })
     }),
     GraphQLModule.forRoot({
@@ -34,8 +35,15 @@ import { Review } from './podcasts/entities/review.entity';
       context: ({req}) => ({user: req['user']})
     }),
     TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: process.env.DB_NAME,
+      ...( process.env.DATABASE_URL
+        ? {
+            type: 'postgres',
+            url: process.env.DATABASE_URL
+          } 
+        : {
+            type: 'sqlite',
+            database: process.env.DB_NAME,
+          }),
       entities: [Podcast, Episode, User, Review],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: process.env.NODE_ENV !== 'production',
