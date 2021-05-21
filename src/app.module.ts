@@ -31,6 +31,7 @@ import { Review } from './podcasts/entities/review.entity';
       })
     }),
     GraphQLModule.forRoot({
+      playground: true,
       autoSchemaFile: true,
       context: ({req}) => ({user: req['user']})
     }),
