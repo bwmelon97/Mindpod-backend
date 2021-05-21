@@ -38,7 +38,8 @@ import { Review } from './podcasts/entities/review.entity';
       ...( process.env.DATABASE_URL
         ? {
             type: 'postgres',
-            url: process.env.DATABASE_URL
+            url: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false }
           } 
         : {
             type: 'sqlite',
