@@ -136,8 +136,7 @@ export class PodcastsService {
         }
     }
 
-    /* Toggle Subscribe로 변경 */
-    async subscribePodcast ( 
+    async toggleSubscribePodcast ( 
         subscriber: User,
         podcastId: number 
     ): Promise<CoreOutput> {
@@ -145,7 +144,11 @@ export class PodcastsService {
             const { ok, error, podcast } = await this.getPodcastByID( podcastId );
             if (!ok) throw Error(error)
             
-            subscriber.subscriptions = subscriber.subscriptions.concat([podcast])
+            if ( subscriber.subscriptions.some( sub => sub.id === podcastId ) ) 
+                subscriber.subscriptions = subscriber.subscriptions.filter( sub => sub.id !== podcastId )
+            else 
+                subscriber.subscriptions = subscriber.subscriptions.concat([podcast])
+
             this.users.save(subscriber)
             return { ok: true }
         } catch (error) {

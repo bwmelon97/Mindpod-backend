@@ -70,11 +70,11 @@ export class PodcastsResolver {
 
     @Role(['Listener'])
     @Mutation( returns => CoreOutput )
-    subscribeToPodcast(
+    toggleSubscribePodcast(
         @AuthUser() authUser: User,
         @Args('podcastId') podcastId: number
     ) {
-        return this.podcastService.subscribePodcast(authUser, podcastId)
+        return this.podcastService.toggleSubscribePodcast(authUser, podcastId)
     }
 }
 
