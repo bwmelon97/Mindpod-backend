@@ -19,10 +19,11 @@ import { Review } from './podcasts/entities/review.entity';
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'dev' ? '.env.dev' : '.env.test',
+      ignoreEnvFile: process.env.NODE_ENV === 'production',
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
           .required()
-          .valid('prod', 'dev', 'test')
+          .valid('production', 'dev', 'test')
           .default('dev'),
         PRIVATE_KEY: Joi.string().required(),
         DB_NAME: Joi.string().required()
@@ -37,7 +38,7 @@ import { Review } from './podcasts/entities/review.entity';
       database: process.env.DB_NAME,
       entities: [Podcast, Episode, User, Review],
       logging: process.env.NODE_ENV === 'dev',
-      synchronize: process.env.NODE_ENV !== 'prod',
+      synchronize: process.env.NODE_ENV !== 'production',
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY
