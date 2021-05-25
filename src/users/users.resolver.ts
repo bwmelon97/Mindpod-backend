@@ -24,7 +24,6 @@ export class UsersResolver {
     createAccount(
         @Args('input') createAccountInput: CreateAccountInput
     ): Promise<CoreOutput> {    
-        console.log(process.env.DATABASE_URL)
         return this.usersSerive.createAccount(createAccountInput)
     }
 

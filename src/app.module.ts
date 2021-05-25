@@ -49,7 +49,8 @@ import { Review } from './podcasts/entities/review.entity';
           }),
       entities: [Podcast, Episode, User, Review],
       logging: process.env.NODE_ENV === 'dev',
-      synchronize: process.env.NODE_ENV !== 'production',
+      // synchronize: process.env.NODE_ENV !== 'production',
+      synchronize: true,
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY
