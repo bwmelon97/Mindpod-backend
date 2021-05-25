@@ -5,7 +5,6 @@ import { Episode } from "src/podcasts/entities/episode.entity";
 import { Podcast } from "src/podcasts/entities/podcast.entity";
 import { EditProfileInput } from "src/users/dtos/edit-profile.dto";
 import { LoginInput } from "src/users/dtos/login.dto";
-import { UserRole } from "src/users/entities/user.entity";
 
 export const GRAPHQL_ENDPOINT = '/graphql'
 
@@ -14,7 +13,7 @@ export const WRONG_ID = 999;
 const TEST = 'TEST'
 const UPDATE = 'UPDATE'
 
-export const TEST_PODCAST: Omit<Podcast, 'id' | 'createdAt' | 'updatedAt'> = {
+export const TEST_PODCAST: Omit<Podcast, 'id' | 'createdAt' | 'updatedAt' | 'host' | 'hostId' | 'reviews'> = {
     title: TEST,
     category: TEST,
     rating: 0,
@@ -31,7 +30,7 @@ export const TEST_UPDATE_PODCAST_INPUT: UpdatePodcastInput = {
     category: UPDATE
 }
 
-export const TEST_EPISODE: Omit<Episode, 'id' | 'createdAt' | 'updatedAt' | 'podcast'> = {
+export const TEST_EPISODE: Omit<Episode, 'id' | 'createdAt' | 'updatedAt' | 'podcast' | 'podcastId'> = {
     title: TEST,
     category: TEST,
     rating: 0,
