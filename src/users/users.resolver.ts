@@ -23,7 +23,8 @@ export class UsersResolver {
     @Mutation(returns => CoreOutput)
     createAccount(
         @Args('input') createAccountInput: CreateAccountInput
-    ): Promise<CoreOutput> {
+    ): Promise<CoreOutput> {    
+        console.log(process.env.DATABASE_URL)
         return this.usersSerive.createAccount(createAccountInput)
     }
 
