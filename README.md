@@ -35,6 +35,12 @@ $ yarn start:dev
 
 .
 
+# 해야할 것
+* getPodcasts Pageing 구현
+* Podcast Entity에 cover_img 추가
+* User Entity에 profile_img 추가
+
+
 # Today's Objects
 'Listener'를 위한 Resolver를 작성할 차례입니다.
 
