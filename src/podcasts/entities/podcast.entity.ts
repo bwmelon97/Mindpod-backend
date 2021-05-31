@@ -21,6 +21,10 @@ export class Podcast extends CoreEntity {
     @Column()
     rating: number;
 
+    @Field( type => String )
+    @Column()
+    description: string;
+
     @Field( type => User )
     @ManyToOne(
         type => User, user => user.podcasts,

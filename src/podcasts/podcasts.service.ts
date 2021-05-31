@@ -85,10 +85,10 @@ export class PodcastsService {
 
     async createPodcast ( 
         host: User,
-        { title, category }: CreatePodcastInput 
+        createPodcastInput: CreatePodcastInput 
     ): Promise<CoreOutput> {
         try {
-            const initalData = { title, category, rating: 0, episodes: [], reviews: [] }
+            const initalData = { ...createPodcastInput, rating: 0, episodes: [], reviews: [] }
             const newPodcast = this.podcasts.create( initalData )
             newPodcast.host = host;
             await this.podcasts.save(newPodcast)

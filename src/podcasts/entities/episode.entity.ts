@@ -19,6 +19,10 @@ export class Episode extends CoreEntity {
     @Column()
     rating: number;
     
+    @Field( type => String )
+    @Column()
+    audioFileLink: string;
+
     @Field( type => Podcast )
     @ManyToOne( type => Podcast, podcast => podcast.episodes, { onDelete: 'CASCADE' } )
     podcast: Podcast;
