@@ -2,7 +2,7 @@ import { ArgsType, Field, InputType, PickType } from "@nestjs/graphql";
 import { Episode } from "../entities/episode.entity";
 
 @InputType()
-export class CreateEpisodeInput extends PickType(Episode, ['title', 'category']) {}
+export class CreateEpisodeInput extends PickType(Episode, ['title', 'category', 'audioFileLink']) {}
 
 @ArgsType()
 export class CreateEpisodeDTO {
