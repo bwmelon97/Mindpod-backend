@@ -48,7 +48,7 @@ export class UsersService {
     }
 
     async createAccount ( 
-        { email, password, role }: CreateAccountInput 
+        { email, password, role, profileImg }: CreateAccountInput 
     ): Promise<CoreOutput> {
         try {
             /* 1. email 확인 -> 이미 있는 유저이면 fail */    
@@ -57,6 +57,7 @@ export class UsersService {
     
             /* 2. Create User & DB Save( hash password automatically before insert ) */
             const createdUser = this.users.create({ email, password, role });
+            if ( profileImg ) { createdUser.profileImg = profileImg }
             await this.users.save(createdUser)
             
             return { ok: true }

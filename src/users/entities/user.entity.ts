@@ -27,6 +27,10 @@ export class User extends CoreEntity {
     @Column({ type: 'simple-enum', enum: UserRole })
     role: UserRole
 
+    @Field(type => String)
+    @Column( {nullable: true} )
+    profileImg: string;
+
     @Field(type => [Podcast])
     @OneToMany(
         type => Podcast, podcast => podcast.host, 

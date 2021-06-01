@@ -40,7 +40,6 @@ $ yarn start:dev
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * getPodcasts 이 리턴하는 Podcast에 host가 안 
 * Podcast Entity에 cover_img 추가
-* User Entity에 profile_img 추가
 
 
 # Today's Objects
