@@ -29,7 +29,7 @@ export class PodcastsService {
     /* Find => Relation Option */
     async getAllPodcasts (): Promise<PodcastsOutput> {
         try {
-            const podcastList = await this.podcasts.find(); 
+            const podcastList = await this.podcasts.find({ relations: ['host'] }); 
             return { ok: true, podcasts: podcastList }
         }
         catch {
@@ -68,7 +68,7 @@ export class PodcastsService {
     
     async getPodcastByID (pcID: number): Promise<PodcastOutput> {
         try {
-            const foundPodcast = await this.podcasts.findOne(pcID);
+            const foundPodcast = await this.podcasts.findOne(pcID, { relations: ['host'] });
             if (!foundPodcast) 
                 return {
                     ok: false,
