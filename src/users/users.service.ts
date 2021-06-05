@@ -8,6 +8,7 @@ import { User } from './entities/user.entity';
 import { JwtService } from 'src/jwt/jwt.service';
 import { SeeProfileOutput, SeeSubscriptionsOutput } from './dtos/see-profile.dto';
 import { EditProfileInput } from './dtos/edit-profile.dto';
+import { CheckEmailInput, CheckEmailOutput } from './dtos/check-email.dto';
 
 
 @Injectable()
@@ -43,6 +44,18 @@ export class UsersService {
             return {
                 ok: false,
                 error: error ? error.message : 'Fail to load subscriptions.'
+            }
+        }
+    }
+
+    async checkEmail ( { email }: CheckEmailInput ): Promise<CheckEmailOutput> {
+        try {
+            const doesExist = await this.users.findOne({ email }, { select: ['id'] })
+            return { ok: true, isNewEmail: Boolean(!doesExist) }
+        } catch (error) {
+            return { 
+                ok: false, 
+                error: error ? error.message : 'Fail to check email...'
             }
         }
     }

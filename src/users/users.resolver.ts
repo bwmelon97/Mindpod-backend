@@ -3,6 +3,7 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { AuthUser } from 'src/auth/auth-user.decorator';
 import { Role } from 'src/auth/role.decorator';
 import { CoreOutput } from 'src/common/dtos/core-output.dto';
+import { CheckEmailOutput, CheckEmailInput } from './dtos/check-email.dto';
 import { CreateAccountInput } from './dtos/create-account.dto';
 import { EditProfileInput } from './dtos/edit-profile.dto';
 import { LoginInput, LoginOutput } from './dtos/login.dto';
@@ -19,6 +20,13 @@ export class UsersResolver {
     // users(): Promise<User[]> {
     //     return this.usersSerive.getUsers()
     // }
+
+    @Mutation(retuns => CheckEmailOutput)
+    checkEmail( 
+        @Args('input') checkEmailInput: CheckEmailInput 
+    ): Promise<CheckEmailOutput> {
+        return this.usersSerive.checkEmail(checkEmailInput)
+    }
 
     @Mutation(returns => CoreOutput)
     createAccount(
