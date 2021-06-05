@@ -62,18 +62,24 @@ export class UsersService {
 
     async createAccount ( 
         { email, password, role, profileImg }: CreateAccountInput 
-    ): Promise<CoreOutput> {
+    ): Promise<LoginOutput> {
         try {
-            /* 1. email 확인 -> 이미 있는 유저이면 fail */    
-            const doesExist = await this.users.findOne({ email })
-            if (doesExist) throw Error(`User email: ${email} has already existed...`)
-    
+            /* 1. email 확인 -> 이미 있는 유저이면 fail 
+               사실 성능상 없는게 좋지만, Frontend에서 실수로 check email 안하고 실행하면 
+               대참사가 벌어지기 때문에 안전상 작성 */    
+            const { ok, isNewEmail, error } = await this.checkEmail({ email })
+            if (!ok) throw Error(error)
+            if (!isNewEmail) throw Error(`User email: ${email} has already existed...`)
+
             /* 2. Create User & DB Save( hash password automatically before insert ) */
-            const createdUser = this.users.create({ email, password, role });
-            if ( profileImg ) { createdUser.profileImg = profileImg }
-            await this.users.save(createdUser)
-            
-            return { ok: true }
+            const preCreatedUser = this.users.create({ email, password, role });
+            if ( profileImg ) { preCreatedUser.profileImg = profileImg }
+            const createdUser = await this.users.save(preCreatedUser)
+
+            /* 3. 계정 성공에 성공하면 token 발급해준다 */
+            const token = this.jwtService.sign({id: createdUser.id})
+
+            return { ok: true, token }
         } catch ( error ) { 
             return { 
                 ok: false, 

@@ -28,10 +28,10 @@ export class UsersResolver {
         return this.usersSerive.checkEmail(checkEmailInput)
     }
 
-    @Mutation(returns => CoreOutput)
+    @Mutation(returns => LoginOutput)
     createAccount(
         @Args('input') createAccountInput: CreateAccountInput
-    ): Promise<CoreOutput> {
+    ): Promise<LoginOutput> {
         return this.usersSerive.createAccount(createAccountInput)
     }
 

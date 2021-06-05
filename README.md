@@ -36,8 +36,7 @@ $ yarn start:dev
 .
 
 # 해야할 것
-* User: Email만 받아서 해당 이메일이 DB에 존재하는 지 확인하는 Mutation 추가
-* createAccount Mutation 성공 시 token 생성 및 반환
+* Class Validator로 유효성 검사 (users, podcasts)
 * getPodcasts Pageing 구현
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * Podcast Entity에 cover_img 추가
