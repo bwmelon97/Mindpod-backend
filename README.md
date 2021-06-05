@@ -36,7 +36,7 @@ $ yarn start:dev
 .
 
 # 해야할 것
-* Class Validator로 유효성 검사 (users, podcasts)
+* Class Validator로 유효성 검사 (podcasts)
 * getPodcasts Pageing 구현
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * Podcast Entity에 cover_img 추가

@@ -5,6 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { Review } from "src/podcasts/entities/review.entity";
 import { Podcast } from "src/podcasts/entities/podcast.entity";
 import { Episode } from "src/podcasts/entities/episode.entity";
+import { IsEmail, IsEnum, IsString } from "class-validator";
 
 export enum UserRole {
     Host        = 'Host',
@@ -15,21 +16,25 @@ registerEnumType(UserRole, { name: 'UserRole' })
 @ObjectType()
 @Entity()
 export class User extends CoreEntity {
+    @IsEmail()
     @Field(type => String)
     @Column()
     email: string;
 
+    @IsString()
     @Field(type => String)
     @Column( {select: false} )
     password: string;
 
+    @IsEnum(UserRole)
     @Field(type => UserRole)
     @Column({ type: 'simple-enum', enum: UserRole })
     role: UserRole
 
-    @Field(type => String)
+    @IsString()
+    @Field(type => String, { nullable: true })
     @Column( {nullable: true} )
-    profileImg: string;
+    profileImg?: string;
 
     @Field(type => [Podcast])
     @OneToMany(
