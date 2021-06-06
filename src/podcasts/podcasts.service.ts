@@ -8,7 +8,7 @@ import { Podcast } from './entities/podcast.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
-import { PodcastOutput, PodcastsOutput } from "./dtos/get-podcast.dto";
+import { GetAllPodcastsInput, PodcastOutput, PodcastsOutput } from "./dtos/get-podcast.dto";
 import { CoreOutput } from 'src/common/dtos/core-output.dto';
 import { User } from 'src/users/entities/user.entity';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
@@ -26,16 +26,24 @@ export class PodcastsService {
         @InjectRepository(Review) private readonly reviews: Repository<Review>,
     ) {}
 
+    private readonly PODCASTS_PER_PAGE = 10
+
     /* Find => Relation Option */
-    async getAllPodcasts (): Promise<PodcastsOutput> {
+    async getAllPodcasts ( { page }: GetAllPodcastsInput ): Promise<PodcastsOutput> {
         try {
-            const podcastList = await this.podcasts.find({ relations: ['host'] }); 
-            return { ok: true, podcasts: podcastList }
+            const [podcasts, totalCounts] = await this.podcasts.findAndCount({ 
+                relations: ['host'],
+                take: this.PODCASTS_PER_PAGE,
+                skip: (page - 1) * this.PODCASTS_PER_PAGE
+            }); 
+            const totalPages = Math.ceil( totalCounts / this.PODCASTS_PER_PAGE ) 
+            if ( page > totalPages ) throw Error('Given page is bigger than total pages.')
+            return { ok: true, podcasts, totalCounts, totalPages }
         }
-        catch {
+        catch (error) {
             return {
                 ok: false,
-                error: 'Fail to get podcasts'
+                error: error ? error.message : "Fail to get podcasts."
             }
         }
     }
@@ -44,20 +52,16 @@ export class PodcastsService {
         { query, page }: SearchPodcastsInput 
     ): Promise<SearchPodcastsOutput> {
         try {
-            const PODCASTS_PER_PAGE = 20;
-            const [ foundPodcasts, totalCounts ] = await this.podcasts.findAndCount({
+            const [ podcasts, totalCounts ] = await this.podcasts.findAndCount({
                 where: {
                     title: ILike(`%${query}%`),
                 },
-                take: PODCASTS_PER_PAGE,
-                skip: (page - 1) * PODCASTS_PER_PAGE
+                take: this.PODCASTS_PER_PAGE,
+                skip: (page - 1) * this.PODCASTS_PER_PAGE
             })
-            return { 
-                ok: true, 
-                podcasts: foundPodcasts,
-                totalCounts,
-                totalPages: Math.ceil( totalCounts / PODCASTS_PER_PAGE )
-            }
+            const totalPages = Math.ceil( totalCounts / this.PODCASTS_PER_PAGE ) 
+            if ( page > totalPages ) throw Error('Given page is bigger than total pages.')
+            return { ok: true, podcasts, totalCounts, totalPages }
         } catch (error) {
             return {
                 ok: false,

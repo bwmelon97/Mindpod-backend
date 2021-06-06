@@ -1,6 +1,7 @@
 import { Field, InputType, ObjectType } from "@nestjs/graphql";
 import { CoreOutput } from "src/common/dtos/core-output.dto";
 import { Podcast } from "../entities/podcast.entity";
+import { PaginationInput, PaginationOutput } from "./pagination.dto";
 
 @ObjectType()
 export class PodcastOutput extends CoreOutput {
@@ -8,8 +9,11 @@ export class PodcastOutput extends CoreOutput {
     podcast?: Podcast;
 }
 
+@InputType()
+export class GetAllPodcastsInput extends PaginationInput {}
+
 @ObjectType()
-export class PodcastsOutput extends CoreOutput {
+export class PodcastsOutput extends PaginationOutput {
     @Field(type => [Podcast], { nullable: true })
     podcasts?: Podcast[];
 }
