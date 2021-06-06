@@ -68,7 +68,9 @@ export class PodcastsService {
     
     async getPodcastByID (pcID: number): Promise<PodcastOutput> {
         try {
-            const foundPodcast = await this.podcasts.findOne(pcID, { relations: ['host'] });
+            const foundPodcast = await this.podcasts.findOne(pcID, { 
+                relations: ['host', 'episodes', 'reviews'] ,
+            });
             if (!foundPodcast) 
                 return {
                     ok: false,

@@ -38,14 +38,12 @@ export class Podcast extends CoreEntity {
     @Field( type => [Episode] )
     @OneToMany( 
         type => Episode, entity => entity.podcast, 
-        { eager: true }    
     )
     episodes: Episode[];
 
     @Field( type => [Review] )
     @OneToMany( 
         type => Review, review => review.podcast,
-        { eager: true }    
     )
     reviews: Review[]
 }
