@@ -6,7 +6,7 @@ import { PaginationInput, PaginationOutput } from "./pagination.dto";
 @InputType()
 export class SearchPodcastsInput extends PaginationInput {
     @Field(type => String)
-    searchInput: string;
+    query: string;
 }
 
 @ObjectType()

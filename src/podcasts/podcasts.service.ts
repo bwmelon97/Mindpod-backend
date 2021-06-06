@@ -41,13 +41,13 @@ export class PodcastsService {
     }
 
     async searchPodcasts ( 
-        { searchInput, page }: SearchPodcastsInput 
+        { query, page }: SearchPodcastsInput 
     ): Promise<SearchPodcastsOutput> {
         try {
             const PODCASTS_PER_PAGE = 20;
             const [ foundPodcasts, totalCounts ] = await this.podcasts.findAndCount({
                 where: {
-                    title: ILike(`%${searchInput}%`),
+                    title: ILike(`%${query}%`),
                 },
                 take: PODCASTS_PER_PAGE,
                 skip: (page - 1) * PODCASTS_PER_PAGE
