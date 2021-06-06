@@ -3,9 +3,9 @@ import { Podcast } from "../entities/podcast.entity";
 
 @InputType()
 export class UpdatePodcastInput extends PartialType( 
-    PickType(Podcast, ['title', 'category', 'description']),
+    PickType(Podcast, ['title', 'category', 'description', 'coverImg']),
     InputType
-) { }
+) {}
 
 @ArgsType()
 export class UpdatePodcastDTO {

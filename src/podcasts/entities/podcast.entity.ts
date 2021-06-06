@@ -25,6 +25,10 @@ export class Podcast extends CoreEntity {
     @Column()
     description: string;
 
+    @Field( type => String, { nullable: true } )
+    @Column( { nullable: true } )
+    coverImg?: string;
+
     @Field( type => User )
     @ManyToOne(
         type => User, user => user.podcasts,
