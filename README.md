@@ -42,6 +42,7 @@ $ yarn start:dev
 * getPodcasts Pageing 구현
 * Podcast Entity에 cover_img 추가
 * Upload Module 만들기
+* Review CRUD
 
 # Today's Objects
 'Listener'를 위한 Resolver를 작성할 차례입니다.
