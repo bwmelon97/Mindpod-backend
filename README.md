@@ -37,10 +37,11 @@ $ yarn start:dev
 
 # 해야할 것
 * Class Validator로 유효성 검사 (podcasts)
-* getPodcasts Pageing 구현
+* User Entity의 eager 옵션을 없애고 query를 추가하기
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
+* getPodcasts Pageing 구현
 * Podcast Entity에 cover_img 추가
-
+* Upload Module 만들기
 
 # Today's Objects
 'Listener'를 위한 Resolver를 작성할 차례입니다.
