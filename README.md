@@ -40,6 +40,7 @@ $ yarn start:dev
 * User Entity의 eager 옵션을 없애고 query를 추가하기
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * Review CRUD
+* Get My Podcasts (for Host)
 * See Podcast Dashboard (seeSubscribers, seeReviews)
 * See Podcast Categories
 
