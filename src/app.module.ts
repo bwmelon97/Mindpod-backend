@@ -12,6 +12,7 @@ import { JwtModule } from './jwt/jwt.module';
 import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Review } from './podcasts/entities/review.entity';
+import { UploadsModule } from './uploads/uploads.module';
 
 
 @Module({
@@ -28,6 +29,9 @@ import { Review } from './podcasts/entities/review.entity';
         PRIVATE_KEY: Joi.string().required(),
         DB_NAME: Joi.string(),
         DATABASE_URL: Joi.string(),
+        AWS_ACCESS_KEY_ID: Joi.string().required(),
+        AWS_SECRET_ACCESS_KEY: Joi.string().required(),
+        AWS_BUCKET_NAME: Joi.string().required(),
       })
     }),
     GraphQLModule.forRoot({
@@ -58,6 +62,7 @@ import { Review } from './podcasts/entities/review.entity';
     AuthModule,
     PodcastsModule,
     UsersModule,
+    UploadsModule,
   ],
 })
 export class AppModule implements NestModule {
