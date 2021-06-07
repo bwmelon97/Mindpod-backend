@@ -41,6 +41,9 @@ $ yarn start:dev
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * Upload Module 만들기
 * Review CRUD
+* Podcast에 subscriber Column 추가
+* See Podcast Dashboard (seeSubscribers, seeReviews)
+* See Podcast Categories
 
 # Today's Objects
 'Listener'를 위한 Resolver를 작성할 차례입니다.
