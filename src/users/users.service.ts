@@ -38,8 +38,10 @@ export class UsersService {
 
     async seeSubscriptions ( listener: User ): Promise<SeeSubscriptionsOutput> {
         try {
-            const { subscriptions } = await this.users.findOne( listener.id )
-            return { ok: true, subscriptions: subscriptions }
+            const { subscriptions } = await this.users.findOne( 
+                listener.id, { relations: ['subscriptions'] } 
+            )
+            return { ok: true, subscriptions }
         } catch (error) {
             return {
                 ok: false,

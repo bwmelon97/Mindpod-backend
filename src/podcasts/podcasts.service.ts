@@ -159,6 +159,7 @@ export class PodcastsService {
         podcastId: number 
     ): Promise<CoreOutput> {
         try {
+            subscriber = await this.users.findOne(subscriber.id, { relations: ['subscriptions'] })
             const { ok, error, podcast } = await this.getPodcastByID( podcastId );
             if (!ok) throw Error(error)
             
