@@ -90,11 +90,9 @@ export class PodcastsService {
         }
     }
     
-    async getPodcastByID (pcID: number): Promise<PodcastOutput> {
+    async getPodcast (pcID: number, relations?: (keyof Podcast)[]): Promise<PodcastOutput> {
         try {
-            const foundPodcast = await this.podcasts.findOne(pcID, { 
-                relations: ['host', 'episodes', 'reviews'] ,
-            });
+            const foundPodcast = await this.podcasts.findOne(pcID, { relations });
             if (!foundPodcast) 
                 return {
                     ok: false,
@@ -107,6 +105,28 @@ export class PodcastsService {
                 error: error? error.message : "Fail to find podcast." 
             } 
         }
+    }
+
+    async getPodcastForHost (authUser: User, pcID: number): Promise<PodcastOutput> {
+        try {
+            const { ok, error, podcast } = await this.getPodcast(
+                pcID, ['episodes', 'reviews', 'subscribers', 'host']
+            )
+            if (!ok) throw Error(error)
+            if (podcast.host.id !== authUser.id)
+                throw Error('This Podcast is not yours !')
+            
+            return { ok: true, podcast }
+        } catch (error) { 
+            return { 
+                ok: false, 
+                error: error? error.message : "Fail to find podcast." 
+            } 
+        }
+    }
+
+    getPodcastForListener (pcID: number): Promise<PodcastOutput> {
+        return this.getPodcast(pcID, ['host', 'episodes', 'reviews'])
     }
 
     async createPodcast ( 
@@ -129,7 +149,7 @@ export class PodcastsService {
 
     async updatePodcast ({ id, data }: UpdatePodcastDTO ): Promise<CoreOutput> {
         try {
-            const { ok, error } = await this.getPodcastByID(id)
+            const { ok, error } = await this.getPodcast(id)
             if ( !ok ) throw Error(error)
             await this.podcasts.update( id, { ...data } )
             return { ok: true }
@@ -143,7 +163,7 @@ export class PodcastsService {
 
     async deletePodcast (pcID: number): Promise<CoreOutput> { 
         try {
-            const { ok, error } = await this.getPodcastByID(pcID)
+            const { ok, error } = await this.getPodcast(pcID)
             if ( !ok )  throw Error(error)
             await this.podcasts.delete(pcID)
             return { ok: true }
@@ -160,7 +180,7 @@ export class PodcastsService {
         { podcastId, description }: CreateReviewInput
     ): Promise<CreateReviewOutput> {
         try {
-            const { ok, error, podcast } = await this.getPodcastByID( podcastId );
+            const { ok, error, podcast } = await this.getPodcast( podcastId );
             if (!ok) throw Error(error)
 
             const newReivew = this.reviews.create({ description, writer, podcast })
@@ -180,7 +200,7 @@ export class PodcastsService {
     ): Promise<CoreOutput> {
         try {
             subscriber = await this.users.findOne(subscriber.id, { relations: ['subscriptions'] })
-            const { ok, error, podcast } = await this.getPodcastByID( podcastId );
+            const { ok, error, podcast } = await this.getPodcast( podcastId );
             if (!ok) throw Error(error)
             
             if ( subscriber.subscriptions.some( sub => sub.id === podcastId ) ) 
@@ -201,7 +221,7 @@ export class PodcastsService {
         
     async getEpisodes (pcID: number): Promise<EpisodesOutput> {
         try {
-            const { podcast, ok, error } = await this.getPodcastByID(pcID);
+            const { podcast, ok, error } = await this.getPodcast(pcID);
             if ( !ok ) throw Error(error)
             return { ok: true, episodes: podcast.episodes }
         } catch (error) { 
@@ -214,7 +234,7 @@ export class PodcastsService {
     
     async createEpisode ( {pcID, data}: CreateEpisodeDTO ): Promise<CoreOutput> {
         try {
-            const { ok, error, podcast } = await this.getPodcastByID(pcID);
+            const { ok, error, podcast } = await this.getPodcast(pcID);
             if ( !ok ) throw Error(error)
     
             const newEpisode: Episode = this.episodes.create({
@@ -232,7 +252,7 @@ export class PodcastsService {
 
     async doesEpisodeExist (pcID: number, epID: number): Promise<CoreOutput> {
         try {
-            const {ok, error, podcast} = await this.getPodcastByID(pcID);
+            const {ok, error, podcast} = await this.getPodcast(pcID);
             if ( !ok )  throw Error(error)
             const foundEpisode = podcast.episodes.find(ep => ep.id === epID)            
             if ( !foundEpisode ) throw Error(`Episode id: ${epID} does not exist.`)            

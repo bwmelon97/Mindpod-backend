@@ -27,10 +27,19 @@ export class PodcastsResolver {
         return this.podcastService.getAllPodcasts(getAllPodcastsInput) 
     }
 
-    @Role(['Any'])
+    @Role(['Host'])
     @Query( returns => PodcastOutput )
-    getPodcast( @Args('id') id: number ): Promise<PodcastOutput> {
-        return this.podcastService.getPodcastByID(id); 
+    getPodcastForHost(
+        @AuthUser() authUser: User,
+        @Args('id') id: number      
+    ): Promise<PodcastOutput> {
+        return this.podcastService.getPodcastForHost(authUser, id); 
+    }
+
+    @Role(['Listener'])
+    @Query( returns => PodcastOutput )
+    getPodcastForListener( @Args('id') id: number ): Promise<PodcastOutput> {
+        return this.podcastService.getPodcastForListener(id); 
     }
 
     @Role(['Host'])

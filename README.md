@@ -41,7 +41,6 @@ $ yarn start:dev
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * Review CRUD
 * Get Podcasts 코드 리팩토링하기 (All, Search, My)
-* See Podcast Dashboard (seeSubscribers, seeReviews)
 * See Podcast Categories
 
 # Today's Objects
