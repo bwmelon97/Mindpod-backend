@@ -7,7 +7,7 @@ import { CreateEpisodeDTO } from './dtos/create-episode.dto';
 import { CreatePodcastInput } from './dtos/create-podcast.dto';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
-import { GetAllPodcastsInput, PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
+import { GetPodcastsInput, PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 import { UpdateEpisodeDTO } from './dtos/update-episode.dto';
 import { UpdatePodcastDTO } from './dtos/update-podcast.dto';
@@ -22,7 +22,7 @@ export class PodcastsResolver {
     @Role(['Any'])
     @Query( returns => PodcastsOutput )
     getAllPodcasts(
-        @Args('input') getAllPodcastsInput: GetAllPodcastsInput
+        @Args('input') getAllPodcastsInput: GetPodcastsInput
     ): Promise<PodcastsOutput> { 
         return this.podcastService.getAllPodcasts(getAllPodcastsInput) 
     }
@@ -31,6 +31,15 @@ export class PodcastsResolver {
     @Query( returns => PodcastOutput )
     getPodcast( @Args('id') id: number ): Promise<PodcastOutput> {
         return this.podcastService.getPodcastByID(id); 
+    }
+
+    @Role(['Host'])
+    @Query( returns => PodcastsOutput )
+    getMyPodcasts(
+        @AuthUser() host: User,
+        @Args('input') getMyPodcastsInput: GetPodcastsInput
+    ): Promise<PodcastsOutput> {
+        return this.podcastService.getMyPodcasts(host, getMyPodcastsInput)
     }
 
     @Role(['Host'])

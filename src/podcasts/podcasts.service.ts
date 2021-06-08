@@ -8,7 +8,7 @@ import { Podcast } from './entities/podcast.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
-import { GetAllPodcastsInput, PodcastOutput, PodcastsOutput } from "./dtos/get-podcast.dto";
+import { GetPodcastsInput, PodcastOutput, PodcastsOutput } from "./dtos/get-podcast.dto";
 import { CoreOutput } from 'src/common/dtos/core-output.dto';
 import { User } from 'src/users/entities/user.entity';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
@@ -29,7 +29,7 @@ export class PodcastsService {
     private readonly PODCASTS_PER_PAGE = 10
 
     /* Find => Relation Option */
-    async getAllPodcasts ( { page }: GetAllPodcastsInput ): Promise<PodcastsOutput> {
+    async getAllPodcasts ( { page }: GetPodcastsInput ): Promise<PodcastsOutput> {
         try {
             const [podcasts, totalCounts] = await this.podcasts.findAndCount({ 
                 relations: ['host'],
@@ -66,6 +66,26 @@ export class PodcastsService {
             return {
                 ok: false,
                 error: error ? error.message : "Fail to search podcasts."
+            }
+        }
+    }
+
+    async getMyPodcasts ( host: User, { page }: GetPodcastsInput ): Promise<PodcastsOutput> {
+        try {
+            const [podcasts, totalCounts] = await this.podcasts.findAndCount({ 
+                loadRelationIds: { relations: ['host'] },
+                where: { host: host.id },
+                take: this.PODCASTS_PER_PAGE,
+                skip: (page - 1) * this.PODCASTS_PER_PAGE
+            }); 
+            const totalPages = Math.ceil( totalCounts / this.PODCASTS_PER_PAGE ) 
+            if ( totalPages === 0 ) return { ok: true, podcasts: [] }
+            if ( page > totalPages ) throw Error('Given page is bigger than total pages.')
+            return { ok: true, podcasts, totalCounts, totalPages }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to get podcasts."
             }
         }
     }

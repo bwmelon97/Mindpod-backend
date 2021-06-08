@@ -10,7 +10,7 @@ export class PodcastOutput extends CoreOutput {
 }
 
 @InputType()
-export class GetAllPodcastsInput extends PaginationInput {}
+export class GetPodcastsInput extends PaginationInput {}
 
 @ObjectType()
 export class PodcastsOutput extends PaginationOutput {
