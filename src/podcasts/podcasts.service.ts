@@ -14,6 +14,7 @@ import { User } from 'src/users/entities/user.entity';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
 import { Review } from './entities/review.entity';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
+import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
 
 
 @Injectable()
@@ -175,25 +176,6 @@ export class PodcastsService {
         }
     }
 
-    async createPodcastReview (
-        writer: User,
-        { podcastId, description }: CreateReviewInput
-    ): Promise<CreateReviewOutput> {
-        try {
-            const { ok, error, podcast } = await this.getPodcast( podcastId );
-            if (!ok) throw Error(error)
-
-            const newReivew = this.reviews.create({ description, writer, podcast })
-            await this.reviews.save(newReivew)
-            return { ok: true }
-        } catch (error) {
-            return {
-                ok: false,
-                error: error ? error.message : "Fail to Create Podcast Review."
-            }
-        }
-    }
-
     async toggleSubscribePodcast ( 
         subscriber: User,
         podcastId: number 
@@ -306,6 +288,42 @@ export class PodcastsService {
             return {
                 ok: false,
                 error: error ? error.message : 'Fail to mark episode as played.'
+            }
+        }
+    }
+
+    async getReviews ({ pocastId }: GetReviewsInput): Promise<GetReviewsOutput> {
+        try {
+            const { ok, error, podcast } = await this.getPodcast(pocastId, ['reviews'])
+            if (!ok) throw Error(error)
+
+            return {
+                ok: true,
+                reviews: podcast.reviews
+            }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : 'Fail to get reviews'
+            }
+        }
+    }
+
+    async createReview (
+        writer: User,
+        { podcastId, description }: CreateReviewInput
+    ): Promise<CreateReviewOutput> {
+        try {
+            const { ok, error, podcast } = await this.getPodcast( podcastId );
+            if (!ok) throw Error(error)
+
+            const newReivew = this.reviews.create({ description, writer, podcast })
+            await this.reviews.save(newReivew)
+            return { ok: true }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to Create Podcast Review."
             }
         }
     }

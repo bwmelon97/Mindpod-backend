@@ -8,11 +8,13 @@ import { CreatePodcastInput } from './dtos/create-podcast.dto';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
 import { GetPodcastsInput, PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
+import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 import { UpdateEpisodeDTO } from './dtos/update-episode.dto';
 import { UpdatePodcastDTO } from './dtos/update-podcast.dto';
 import { Episode } from './entities/episode.entity';
 import { Podcast } from './entities/podcast.entity';
+import { Review } from './entities/review.entity';
 import { PodcastsService } from './podcasts.service';
 
 @Resolver(of => Podcast)
@@ -83,15 +85,6 @@ export class PodcastsResolver {
     }
 
     @Role(['Listener'])
-    @Mutation( returns => CreateReviewOutput )
-    reviewPodcast (
-        @AuthUser() authuser: User,
-        @Args('input') createReviewInput: CreateReviewInput
-    ) {
-        return this.podcastService.createPodcastReview(authuser, createReviewInput)
-    }
-
-    @Role(['Listener'])
     @Mutation( returns => CoreOutput )
     toggleSubscribePodcast(
         @AuthUser() authUser: User,
@@ -144,4 +137,27 @@ export class EpisodeResolver {
     ): Promise<CoreOutput> {
         return this.podcastService.markEpisodeAsPlayed(authUser, episodeId)
     }
+}
+
+@Resolver(of => Review) 
+export class ReviewResolver {
+    constructor(private readonly podcastService: PodcastsService) {}
+
+    @Role(['Any'])
+    @Query(type => GetReviewsOutput)
+    getReviews(
+        @Args('input') getReviewsInput: GetReviewsInput
+    ): Promise<GetReviewsOutput> {
+        return
+    }
+
+    @Role(['Any'])
+    @Mutation( returns => CreateReviewOutput )
+    createReview (
+        @AuthUser() authuser: User,
+        @Args('input') createReviewInput: CreateReviewInput
+    ) {
+        return this.podcastService.createReview(authuser, createReviewInput)
+    }
+
 }
