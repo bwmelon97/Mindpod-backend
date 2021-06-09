@@ -2,6 +2,7 @@ import { Field, ObjectType } from "@nestjs/graphql";
 import { CoreEntity } from "src/common/entities/core.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, Entity, ManyToMany, ManyToOne, OneToMany, RelationId } from "typeorm";
+import { HashTag } from "./hash-tag.entity";
 import { Episode } from "./episode.entity";
 import { Review } from "./review.entity";
 
@@ -14,8 +15,11 @@ export class Podcast extends CoreEntity {
     title: string;
 
     @Field( type => String )
-    @Column()
-    category: string;
+    @ManyToMany( 
+        type => HashTag, 
+        hashtag => hashtag.podcasts 
+    )
+    hashTags: HashTag[];
 
     @Field( type => Number )
     @Column()

@@ -13,6 +13,7 @@ import { JwtMiddleware } from './jwt/jwt.middleware';
 import { AuthModule } from './auth/auth.module';
 import { Review } from './podcasts/entities/review.entity';
 import { UploadsModule } from './uploads/uploads.module';
+import { HashTag } from './podcasts/entities/hash-tag.entity';
 
 
 @Module({
@@ -51,7 +52,7 @@ import { UploadsModule } from './uploads/uploads.module';
             type: 'sqlite',
             database: process.env.DB_NAME,
           }),
-      entities: [Podcast, Episode, User, Review],
+      entities: [Podcast, Episode, User, Review, HashTag],
       logging: process.env.NODE_ENV === 'dev',
       synchronize: true,
       // synchronize: process.env.NODE_ENV !== 'production',
