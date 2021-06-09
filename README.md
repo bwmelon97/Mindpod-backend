@@ -42,6 +42,7 @@ $ yarn start:dev
 * podcasts service file refectoring (파일 분리 혹은 클래스 분리)
 * Get Podcasts 코드 리팩토링하기 (All, Search, My)
 * get podcasts with hashTags
+* update Podcast에서 해시태그를 지우거나 추가할 수 있도록 하기
 
 # Today's Objects
 'Listener'를 위한 Resolver를 작성할 차례입니다.
