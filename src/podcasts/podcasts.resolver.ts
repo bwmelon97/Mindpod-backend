@@ -6,12 +6,14 @@ import { User } from 'src/users/entities/user.entity';
 import { CreateEpisodeDTO } from './dtos/create-episode.dto';
 import { CreatePodcastInput } from './dtos/create-podcast.dto';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
+import { DeleteReviewInput, DeleteReviewOutput } from './dtos/delete-review.dto';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
 import { GetPodcastsInput, PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
 import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 import { UpdateEpisodeDTO } from './dtos/update-episode.dto';
 import { UpdatePodcastDTO } from './dtos/update-podcast.dto';
+import { UpdateReviewInput, UpdateReviewOutput } from './dtos/update-review.dto';
 import { Episode } from './entities/episode.entity';
 import { Podcast } from './entities/podcast.entity';
 import { Review } from './entities/review.entity';
@@ -148,7 +150,7 @@ export class ReviewResolver {
     getReviews(
         @Args('input') getReviewsInput: GetReviewsInput
     ): Promise<GetReviewsOutput> {
-        return
+        return this.podcastService.getReviews(getReviewsInput)
     }
 
     @Role(['Any'])
@@ -160,4 +162,21 @@ export class ReviewResolver {
         return this.podcastService.createReview(authuser, createReviewInput)
     }
 
+    @Role(['Any'])
+    @Mutation( returns => UpdateReviewOutput )
+    updateReview (
+        @AuthUser() authUser: User,
+        @Args('input') updateReviewInput: UpdateReviewInput
+    ): Promise<UpdateReviewOutput> {
+        return this.podcastService.updateReview(authUser, updateReviewInput)
+    }
+
+    @Role(['Any'])
+    @Mutation( returns => DeleteReviewOutput )
+    deleteReview (
+        @AuthUser() authUser: User,
+        @Args('input') deleteReviewInput: DeleteReviewInput
+    ): Promise<DeleteReviewOutput> {
+        return this.podcastService.deleteReview(authUser, deleteReviewInput)
+    }
 }

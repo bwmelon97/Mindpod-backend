@@ -15,6 +15,8 @@ import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto'
 import { Review } from './entities/review.entity';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
+import { UpdateReviewInput, UpdateReviewOutput } from './dtos/update-review.dto';
+import { DeleteReviewInput, DeleteReviewOutput } from './dtos/delete-review.dto';
 
 
 @Injectable()
@@ -323,7 +325,59 @@ export class PodcastsService {
         } catch (error) {
             return {
                 ok: false,
-                error: error ? error.message : "Fail to Create Podcast Review."
+                error: error ? error.message : "Fail to Create Review."
+            }
+        }
+    }
+
+    async findReviewAndCheckUser ( loginUser: User, reviewId: number ): Promise<CoreOutput> {
+        try {
+            const review = await this.reviews.findOne( reviewId, { 
+                loadRelationIds: { relations: ['writer'] } 
+            } )
+            if(!review) throw Error('Review does not exist.')
+            if( loginUser.id !== review.writerId )
+                throw Error('This Review is not yours.')
+
+            return { ok: true }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to find Review."
+            }
+        }
+    }
+
+    async updateReview (
+        loginUser: User, { id, description }: UpdateReviewInput
+    ): Promise<UpdateReviewOutput> {
+        try {
+            const { ok, error } = await this.findReviewAndCheckUser(loginUser, id)
+            if (!ok) throw Error(error)
+
+            await this.reviews.update(id, { description })
+            return { ok: true }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to Update Review."
+            }
+        }
+    }
+
+    async deleteReview ( 
+        loginUser: User, { id }: DeleteReviewInput
+    ): Promise<DeleteReviewOutput> {
+        try {
+            const { ok, error } = await this.findReviewAndCheckUser(loginUser, id)
+            if (!ok) throw Error(error)
+
+            await this.reviews.delete(id)
+            return { ok: true }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to Delete Review."
             }
         }
     }
