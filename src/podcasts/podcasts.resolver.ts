@@ -8,6 +8,7 @@ import { CreatePodcastInput } from './dtos/create-podcast.dto';
 import { CreateReviewInput, CreateReviewOutput } from './dtos/create-review.dto';
 import { DeleteReviewInput, DeleteReviewOutput } from './dtos/delete-review.dto';
 import { EpisodesOutput } from './dtos/get-episodes.dto';
+import { GetAllHashTagsInput, GetAllHashTagsOutput } from './dtos/get-hashtags.dto';
 import { GetPodcastsInput, PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
 import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
@@ -31,6 +32,33 @@ export class PodcastsResolver {
         return this.podcastService.getAllPodcasts(getAllPodcastsInput) 
     }
 
+    @Role(['Listener'])
+    @Query( returns => SearchPodcastsOutput )
+    searchPodcasts( 
+        @Args('input') searchPodcastInput: SearchPodcastsInput 
+    ): Promise<SearchPodcastsOutput> {
+        return this.podcastService.searchPodcasts(searchPodcastInput)
+    }
+
+    getPodcastsByHashTag
+
+    @Role(['Listener'])
+    @Query( returns => GetAllHashTagsOutput )
+    getAllHashTags(
+        @Args('input') getAllHashTagsInput: GetAllHashTagsInput
+    ): Promise<GetAllHashTagsOutput> {
+        return this.podcastService.getAllHashTags(getAllHashTagsInput)
+    }
+
+    @Role(['Host'])
+    @Query( returns => PodcastsOutput )
+    getMyPodcasts(
+        @AuthUser() host: User,
+        @Args('input') getMyPodcastsInput: GetPodcastsInput
+    ): Promise<PodcastsOutput> {
+        return this.podcastService.getMyPodcasts(host, getMyPodcastsInput)
+    }
+
     @Role(['Host'])
     @Query( returns => PodcastOutput )
     getPodcastForHost(
@@ -44,15 +72,6 @@ export class PodcastsResolver {
     @Query( returns => PodcastOutput )
     getPodcastForListener( @Args('id') id: number ): Promise<PodcastOutput> {
         return this.podcastService.getPodcastForListener(id); 
-    }
-
-    @Role(['Host'])
-    @Query( returns => PodcastsOutput )
-    getMyPodcasts(
-        @AuthUser() host: User,
-        @Args('input') getMyPodcastsInput: GetPodcastsInput
-    ): Promise<PodcastsOutput> {
-        return this.podcastService.getMyPodcasts(host, getMyPodcastsInput)
     }
 
     @Role(['Host'])
@@ -76,14 +95,6 @@ export class PodcastsResolver {
     @Mutation ( returns => CoreOutput )
     deletePodcast( @Args('id') id: number ): Promise<CoreOutput> { 
         return this.podcastService.deletePodcast(id)
-    }
-
-    @Role(['Listener'])
-    @Query( returns => SearchPodcastsOutput )
-    searchPodcasts( 
-        @Args('input') searchPodcastInput: SearchPodcastsInput 
-    ): Promise<SearchPodcastsOutput> {
-        return this.podcastService.searchPodcasts(searchPodcastInput)
     }
 
     @Role(['Listener'])

@@ -17,6 +17,8 @@ import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcast
 import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
 import { UpdateReviewInput, UpdateReviewOutput } from './dtos/update-review.dto';
 import { DeleteReviewInput, DeleteReviewOutput } from './dtos/delete-review.dto';
+import { GetAllHashTagsInput, GetAllHashTagsOutput } from './dtos/get-hashtags.dto';
+import { HashTag } from './entities/hash-tag.entity';
 
 
 @Injectable()
@@ -27,9 +29,11 @@ export class PodcastsService {
         @InjectRepository(Podcast) private readonly podcasts: Repository<Podcast>,
         @InjectRepository(Episode) private readonly episodes: Repository<Episode>,
         @InjectRepository(Review) private readonly reviews: Repository<Review>,
+        @InjectRepository(HashTag) private readonly hashTags: Repository<HashTag>,
     ) {}
 
     private readonly PODCASTS_PER_PAGE = 10
+    private readonly HASHTAGS_PER_PAGE = 10
 
     /* Find => Relation Option */
     async getAllPodcasts ( { page }: GetPodcastsInput ): Promise<PodcastsOutput> {
@@ -92,7 +96,25 @@ export class PodcastsService {
             }
         }
     }
+
+    getPodcastsByHashTag
     
+    async getAllHashTags ({ page }: GetAllHashTagsInput): Promise<GetAllHashTagsOutput> {
+        try {
+            const [hashTags, totalCounts] = await this.hashTags.findAndCount({ 
+                take: this.HASHTAGS_PER_PAGE,
+                skip: (page - 1) * this.HASHTAGS_PER_PAGE
+            });
+            const totalPages = Math.ceil( totalCounts / this.HASHTAGS_PER_PAGE ) 
+            return { ok: true, hashTags, totalCounts, totalPages }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to get Hash Tags."
+            }
+        }
+    }
+
     async getPodcast (pcID: number, relations?: (keyof Podcast)[]): Promise<PodcastOutput> {
         try {
             const foundPodcast = await this.podcasts.findOne(pcID, { relations });
