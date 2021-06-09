@@ -41,8 +41,6 @@ $ yarn start:dev
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * podcasts service file refectoring (파일 분리 혹은 클래스 분리)
 * Get Podcasts 코드 리팩토링하기 (All, Search, My)
-* create HashTag Entity
-* create / get HashTag
 * get podcasts with hashTags
 
 # Today's Objects

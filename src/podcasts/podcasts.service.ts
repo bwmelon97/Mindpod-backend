@@ -156,10 +156,30 @@ export class PodcastsService {
 
     async createPodcast ( 
         host: User,
-        createPodcastInput: CreatePodcastInput 
+        { title, description, coverImg, hashTagNames }: CreatePodcastInput 
     ): Promise<CoreOutput> {
         try {
-            const initalData = { ...createPodcastInput, rating: 0, episodes: [], reviews: [] }
+            let hashTags: HashTag[];
+            
+            if (hashTagNames.length === 0) { hashTags = [] }
+            else {
+                hashTags = await Promise.all(
+                    hashTagNames.map( async hName => {
+                        const hashTag = await this.hashTags.findOne({ where: {name: hName} })
+                        if (hashTag) return hashTag
+
+                        const name = hName.trim()
+                        const slug = name.toLowerCase().replace(/ +/g, '-')
+                        const newHashTag = this.hashTags.create({ name, slug })
+                        return this.hashTags.save(newHashTag)                    
+                    })
+                ) 
+            }
+
+            const initalData = { 
+                title, description, coverImg, hashTags, 
+                rating: 0, episodes: [], reviews: [] 
+            }
             const newPodcast = this.podcasts.create( initalData )
             newPodcast.host = host;
             await this.podcasts.save(newPodcast)
