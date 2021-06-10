@@ -41,7 +41,7 @@ $ yarn start:dev
 * getPodcasts 의 리턴 값이 시간 순서가 아님..?
 * podcasts service file refectoring (파일 분리 혹은 클래스 분리)
 * Get Podcasts 코드 리팩토링하기 (All, Search, My)
-* get podcasts with hashTags
+* get podcasts by hash tags 에서 중복 데이터 담길 수 있는 케이스 핸들링
 * update Podcast에서 해시태그를 지우거나 추가할 수 있도록 하기
 
 # Today's Objects

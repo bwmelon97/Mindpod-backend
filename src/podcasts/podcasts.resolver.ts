@@ -10,6 +10,7 @@ import { DeleteReviewInput, DeleteReviewOutput } from './dtos/delete-review.dto'
 import { EpisodesOutput } from './dtos/get-episodes.dto';
 import { GetAllHashTagsInput, GetAllHashTagsOutput } from './dtos/get-hashtags.dto';
 import { GetPodcastsInput, PodcastOutput, PodcastsOutput } from './dtos/get-podcast.dto';
+import { GetPodcastsByHashTagInput } from './dtos/get-podcasts-by-hashtag.dto';
 import { GetReviewsInput, GetReviewsOutput } from './dtos/get-reviews.dto';
 import { SearchPodcastsInput, SearchPodcastsOutput } from './dtos/search-podcasts.dto';
 import { UpdateEpisodeDTO } from './dtos/update-episode.dto';
@@ -40,9 +41,15 @@ export class PodcastsResolver {
         return this.podcastService.searchPodcasts(searchPodcastInput)
     }
 
-    getPodcastsByHashTag
+    @Role(['Any'])
+    @Query( returns => PodcastsOutput )
+    getPodcastsByHashTag(
+        @Args('input') getPodcastsByHashTagInput: GetPodcastsByHashTagInput
+    ): Promise<PodcastsOutput> {
+        return this.podcastService.getPodcastsByHashTag(getPodcastsByHashTagInput)
+    }
 
-    @Role(['Listener'])
+    @Role(['Any'])
     @Query( returns => GetAllHashTagsOutput )
     getAllHashTags(
         @Args('input') getAllHashTagsInput: GetAllHashTagsInput

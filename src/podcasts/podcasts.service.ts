@@ -19,6 +19,7 @@ import { UpdateReviewInput, UpdateReviewOutput } from './dtos/update-review.dto'
 import { DeleteReviewInput, DeleteReviewOutput } from './dtos/delete-review.dto';
 import { GetAllHashTagsInput, GetAllHashTagsOutput } from './dtos/get-hashtags.dto';
 import { HashTag } from './entities/hash-tag.entity';
+import { GetPodcastsByHashTagInput } from './dtos/get-podcasts-by-hashtag.dto';
 
 
 @Injectable()
@@ -44,6 +45,7 @@ export class PodcastsService {
                 skip: (page - 1) * this.PODCASTS_PER_PAGE
             }); 
             const totalPages = Math.ceil( totalCounts / this.PODCASTS_PER_PAGE ) 
+            if ( totalPages === 0 ) return { ok: true, podcasts: [] }
             if ( page > totalPages ) throw Error('Given page is bigger than total pages.')
             return { ok: true, podcasts, totalCounts, totalPages }
         }
@@ -60,6 +62,7 @@ export class PodcastsService {
     ): Promise<SearchPodcastsOutput> {
         try {
             const [ podcasts, totalCounts ] = await this.podcasts.findAndCount({
+                relations: ['host'],
                 where: {
                     title: ILike(`%${query}%`),
                 },
@@ -67,6 +70,7 @@ export class PodcastsService {
                 skip: (page - 1) * this.PODCASTS_PER_PAGE
             })
             const totalPages = Math.ceil( totalCounts / this.PODCASTS_PER_PAGE ) 
+            if ( totalPages === 0 ) return { ok: true, podcasts: [] }
             if ( page > totalPages ) throw Error('Given page is bigger than total pages.')
             return { ok: true, podcasts, totalCounts, totalPages }
         } catch (error) {
@@ -97,7 +101,31 @@ export class PodcastsService {
         }
     }
 
-    getPodcastsByHashTag
+    /* 결과에 같은 팟캐스트가 담길 수 있는 가능성이 있음 */
+    async getPodcastsByHashTag ({ page, hashTagStrings }: GetPodcastsByHashTagInput): Promise<PodcastsOutput> {
+        try {
+            const hashTagSlugs = hashTagStrings.map( hStr => hStr.trim().toLowerCase().replace(/ +/g, '-') )
+            const foundHashTags = await this.hashTags.find({
+                relations: ['podcasts'],
+                where: [ ...hashTagSlugs.map( slug => ({ slug }) ) ]
+            })
+            
+            const totalPodcasts = foundHashTags.map(hashTag => hashTag.podcasts).flat()
+            const totalCounts = totalPodcasts.length
+            if ( totalCounts === 0 ) return { ok: true, podcasts: [] }
+
+            const totalPages = Math.ceil( totalCounts / this.PODCASTS_PER_PAGE ) 
+            if ( page > totalPages ) throw Error('Given page is bigger than total pages.')
+            
+            const podcasts = totalPodcasts.slice( (page - 1) * this.PODCASTS_PER_PAGE, page * this.PODCASTS_PER_PAGE )
+            return { ok: true, podcasts, totalCounts, totalPages }
+        } catch (error) {
+            return {
+                ok: false,
+                error: error ? error.message : "Fail to get podcasts."
+            }
+        }
+    }
     
     async getAllHashTags ({ page }: GetAllHashTagsInput): Promise<GetAllHashTagsOutput> {
         try {
@@ -135,7 +163,7 @@ export class PodcastsService {
     async getPodcastForHost (authUser: User, pcID: number): Promise<PodcastOutput> {
         try {
             const { ok, error, podcast } = await this.getPodcast(
-                pcID, ['episodes', 'reviews', 'subscribers', 'host']
+                pcID, ['episodes', 'reviews', 'subscribers', 'host', 'hashTags']
             )
             if (!ok) throw Error(error)
             if (podcast.host.id !== authUser.id)
@@ -151,7 +179,7 @@ export class PodcastsService {
     }
 
     getPodcastForListener (pcID: number): Promise<PodcastOutput> {
-        return this.getPodcast(pcID, ['host', 'episodes', 'reviews'])
+        return this.getPodcast(pcID, ['host', 'episodes', 'reviews', 'hashTags'])
     }
 
     async createPodcast ( 
